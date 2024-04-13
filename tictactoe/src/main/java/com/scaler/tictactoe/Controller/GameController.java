@@ -17,7 +17,7 @@ public class GameController {
     }
 
     public void executeNextMove(Game game) {
-
+        game.makeNextMove();
     }
 
     public Player getWinner(Game game) {

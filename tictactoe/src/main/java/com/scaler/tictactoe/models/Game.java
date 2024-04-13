@@ -2,6 +2,8 @@ package com.scaler.tictactoe.models;
 
 import com.scaler.tictactoe.Exceptions.InvalidDimensionException;
 import com.scaler.tictactoe.Exceptions.InvalidPlayersException;
+import com.scaler.tictactoe.strategies.gamewinningstrategy.GameWinningStrategy;
+import com.scaler.tictactoe.strategies.gamewinningstrategy.OrderOneGameWinningStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,48 @@ public class Game {
     public void displayBoard(){
         board.displayBoard();
     }
+    private GameWinningStrategy gameWinningStrategy;
+
+    public GameWinningStrategy getGameWinningStrategy() {
+        return gameWinningStrategy;
+    }
+
+    public void setGameWinningStrategy(GameWinningStrategy gameWinningStrategy) {
+        this.gameWinningStrategy = gameWinningStrategy;
+    }
+
+    public void makeNextMove() {
+        //Steps:
+        //1. Player should be able to decide the Move.
+        //2. Check the validation of the move, if move is valid then make the move.
+
+        Player playerToMove = players.get(nextPlayerIndex);
+
+        System.out.println("It is " + playerToMove.getName() + "'s turn");
+        Move move = playerToMove.decideMove(board);
+
+        //validate the Move.
+        int row = move.getCell().getRow();
+        int col = move.getCell().getCol();
+
+        if (board.getBoard().get(row).get(col).getCellState().equals(CellState.EMPTY)) {
+            //Move is valid.
+            board.applyMove(move);
+            moves.add(move);
+
+            //Check the winner.
+            if (gameWinningStrategy.checkWinner(board, move)) {
+                gameStatus = GameStatus.ENDED;
+                winner = playerToMove;
+            }
+
+
+            nextPlayerIndex += 1;
+            nextPlayerIndex %= players.size();
+        } else {
+            //throw some exception.
+        }
+    }
 
     public static class Builder{
         public int getDimensions() {
@@ -112,6 +156,7 @@ public class Game {
             game.setBoard(new Board(dimensions));
             game.setMoves(new ArrayList<>());
             game.setNextPlayerIndex(0);
+            game.setGameWinningStrategy(new OrderOneGameWinningStrategy(dimensions));
             return game;
         }
 

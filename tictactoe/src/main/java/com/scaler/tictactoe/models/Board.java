@@ -28,6 +28,14 @@ public class Board {
             System.out.println();
         }
     }
+    public void applyMove(Move move) {
+        int row = move.getCell().getRow();
+        int col = move.getCell().getCol();
+
+        this.getBoard().get(row).get(col).setCellState(CellState.FILLED);
+        this.getBoard().get(row).get(col).setPlayer(move.getPlayer());
+    }
+
 
     public List<List<Cell>> getBoard() {
         return board;
